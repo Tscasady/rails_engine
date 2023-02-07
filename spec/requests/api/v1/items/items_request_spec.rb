@@ -60,6 +60,16 @@ RSpec.describe 'Item API' do
     expect(item[:attributes][:unit_price]).to be_a Float
   end
 
+  it 'returns status 404 if item is not found' do
+    get "/api/v1/items/999999999"
+
+    expect(status).to eq 404
+
+    get "/api/v1/items/bad_query"
+
+    expect(status).to eq 404
+  end
+
   it 'can create an item' do
     item_params = { name: 'Test Item',
                     description: 'This is what the item is like',
@@ -104,6 +114,24 @@ RSpec.describe 'Item API' do
       expect(response).to be_successful
 
       expect(item.name).to_not eq previous_name
+      expect(item.name).to eq "A New Item Name"
+    end
+
+    it 'can edit a different field' do
+      # TODO: test multiple fields
+      item = Item.first
+      previous_name = item.name
+      item_params = { description: 'A New Item Description' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+
+      item.reload
+
+      expect(response).to be_successful
+
+      expect(item.description).to_not eq previous_name
+      expect(item.description).to eq "A New Item Description"
     end
 
     it 'will raise a 404 if item is not found' do
@@ -131,5 +159,4 @@ RSpec.describe 'Item API' do
     expect(response).to be_successful
     expect { Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
   end
-
 end

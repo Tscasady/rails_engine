@@ -60,51 +60,107 @@ RSpec.describe 'Item API' do
     expect(item[:attributes][:unit_price]).to be_a Float
   end
 
-  it 'can create an item' do
-    item_params = { name: 'Test Item',
-                    description: 'This is what the item is like',
-                    unit_price: 15.5,
-                    merchant_id: @merchant.id }
+  it 'returns status 404 if item is not found' do
+    get "/api/v1/items/999999999"
 
-    headers = { 'CONTENT_TYPE' => 'application/json' }
+    expect(status).to eq 404
 
-    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+    get "/api/v1/items/bad_query"
 
-    expect(response).to be_successful
+    expect(status).to eq 404
+  end
+  describe 'create' do
+    it 'can create an item' do
+      item_params = { name: 'Test Item',
+                      description: 'This is what the item is like',
+                      unit_price: 15.5,
+                      merchant_id: @merchant.id }
 
-    item = JSON.parse(response.body, symbolize_names: true)[:data]
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    expect(Item.all.count).to be 6
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
-    expect(item).to have_key(:type)
-    expect(item[:type]).to eq 'item'
+      expect(response).to be_successful
 
-    expect(item[:attributes]).to have_key(:name)
-    expect(item[:attributes][:name]).to eq 'Test Item'
+      item = JSON.parse(response.body, symbolize_names: true)[:data]
 
-    expect(item[:attributes]).to have_key(:description)
-    expect(item[:attributes][:description]).to eq 'This is what the item is like'
+      expect(Item.all.count).to be 6
 
-    expect(item[:attributes]).to have_key(:unit_price)
-    expect(item[:attributes][:unit_price]).to eq 15.5
+      expect(item).to have_key(:type)
+      expect(item[:type]).to eq 'item'
+
+      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes][:name]).to eq 'Test Item'
+
+      expect(item[:attributes]).to have_key(:description)
+      expect(item[:attributes][:description]).to eq 'This is what the item is like'
+
+      expect(item[:attributes]).to have_key(:unit_price)
+      expect(item[:attributes][:unit_price]).to eq 15.5
+    end
+
+    it 'can return an error if an attribute is not provided' do
+      item_params = { name: 'Test Item',
+                      unit_price: 15.5,
+                      merchant_id: @merchant.id }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(status).to eq 422
+    end
   end
 
-  it 'can edit an item' do
-    # TODO: test multiple fields
-    item = Item.first
-    require 'pry'; binding.pry
-    previous_name = item.name
-    item_params = { name: 'A New Item Name' }
-    headers = { 'CONTENT_TYPE' => 'application/json' }
+  describe 'edit item' do
+    it 'can edit an item' do
+      # TODO: test multiple fields
+      item = Item.first
+      previous_name = item.name
+      item_params = { name: 'A New Item Name' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
 
-    item.reload
-    require 'pry'; binding.pry
+      item.reload
 
-    expect(response).to be_successful
+      expect(response).to be_successful
 
-    expect(item.name).to_not eq previous_name
+      expect(item.name).to_not eq previous_name
+      expect(item.name).to eq "A New Item Name"
+    end
+
+    it 'can edit a different field' do
+      # TODO: test multiple fields
+      item = Item.first
+      previous_name = item.name
+      item_params = { description: 'A New Item Description' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+
+      item.reload
+
+      expect(response).to be_successful
+
+      expect(item.description).to_not eq previous_name
+      expect(item.description).to eq "A New Item Description"
+    end
+
+    it 'will raise a 404 if item is not found' do
+      item_params = { name: 'A New Item Name' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/999999", headers: headers, params: JSON.generate(item: item_params)
+      expect(status).to be 404
+    end
+
+    it 'will raise a 404 if merchant is not found' do
+      item = Item.first
+      item_params = { name: 'A New Item Name', merchant_id: 99999999 }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+      expect(status).to be 404
+    end
   end
 
   it 'can delete an item' do
@@ -116,5 +172,4 @@ RSpec.describe 'Item API' do
     expect(response).to be_successful
     expect { Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
   end
-
 end

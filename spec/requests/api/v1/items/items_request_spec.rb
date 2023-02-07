@@ -99,6 +99,8 @@ RSpec.describe 'Item API' do
 
     patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
 
+    item.reload
+
     expect(response).to be_successful
 
     expect(item.name).to_not eq previous_name

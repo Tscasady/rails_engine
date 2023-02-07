@@ -14,6 +14,10 @@ module Api
         render json: ItemSerializer.new(merchant.items.create(item_params))
       end
 
+      def update
+        render json: ItemSerializer.new(Item.update(params[:id], item_params))
+      end
+
       private
 
       def item_params

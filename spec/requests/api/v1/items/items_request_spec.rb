@@ -89,20 +89,37 @@ RSpec.describe 'Item API' do
     expect(item[:attributes][:unit_price]).to eq 15.5
   end
 
-  it 'can edit an item' do
-    # TODO: test multiple fields
-    item = Item.first
-    previous_name = item.name
-    item_params = { name: 'A New Item Name' }
-    headers = { 'CONTENT_TYPE' => 'application/json' }
+  describe 'edit item' do
+    it 'can edit an item' do
+      # TODO: test multiple fields
+      item = Item.first
+      previous_name = item.name
+      item_params = { name: 'A New Item Name' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
 
-    item.reload
+      item.reload
 
-    expect(response).to be_successful
+      expect(response).to be_successful
 
-    expect(item.name).to_not eq previous_name
+      expect(item.name).to_not eq previous_name
+    end
+
+    it 'will raise a 404 if item is not found' do
+      item_params = { name: 'A New Item Name' }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/999999", headers: headers, params: JSON.generate(item: item_params)
+      expect(status).to be 404
+    end
+
+    it 'will raise a 404 if merchant is not found' do
+      item = Item.first
+      item_params = { name: 'A New Item Name', merchant_id: 99999999 }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+      patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+      expect(status).to be 404
+    end
   end
 
   it 'can delete an item' do

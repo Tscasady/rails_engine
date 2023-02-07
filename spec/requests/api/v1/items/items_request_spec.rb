@@ -159,7 +159,7 @@ RSpec.describe 'Item API' do
       item_params = { name: 'A New Item Name', merchant_id: 99999999 }
       headers = { 'CONTENT_TYPE' => 'application/json' }
       patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
-      expect(status).to be 404
+      expect(status).to be 422
     end
   end
 

@@ -15,10 +15,12 @@ module Api
       end
 
       def update
-        # TODO: refactor into validation on model, this is not very intention revealing
-        merchant = Merchant.find(item_params[:merchant_id]) if item_params[:merchant_id]
         item = Item.find(params[:id])
-        render json: ItemSerializer.new(Item.update(item.id, item_params))
+        if item.update(item_params)
+          render json: ItemSerializer.new(item)
+        else
+          raise ActiveRecord::RecordInvalid.new(item)
+        end
       end
 
       def destroy

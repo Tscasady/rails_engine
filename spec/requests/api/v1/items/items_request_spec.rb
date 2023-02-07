@@ -92,6 +92,7 @@ RSpec.describe 'Item API' do
   it 'can edit an item' do
     # TODO: test multiple fields
     item = Item.first
+    require 'pry'; binding.pry
     previous_name = item.name
     item_params = { name: 'A New Item Name' }
     headers = { 'CONTENT_TYPE' => 'application/json' }
@@ -99,6 +100,7 @@ RSpec.describe 'Item API' do
     patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
 
     item.reload
+    require 'pry'; binding.pry
 
     expect(response).to be_successful
 

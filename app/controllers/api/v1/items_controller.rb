@@ -11,7 +11,7 @@ module Api
 
       def create
         merchant = Merchant.find(params[:item][:merchant_id])
-        render json: ItemSerializer.new(merchant.items.create(item_params))
+        render json: ItemSerializer.new(merchant.items.create(item_params)), status: :created
       end
 
       def update
@@ -25,7 +25,7 @@ module Api
       private
 
       def item_params
-        params.require(:item).permit(:name, :description, :unit_price)
+        params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
       end
     end
   end

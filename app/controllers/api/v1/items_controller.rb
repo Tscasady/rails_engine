@@ -15,7 +15,9 @@ module Api
       end
 
       def update
-        render json: ItemSerializer.new(Item.update(params[:id], item_params))
+        merchant = Merchant.find(item_params[:merchant_id]) if item_params[:merchant_id]
+        item = Item.find(params[:id])
+        render json: ItemSerializer.new(Item.update(item.id, item_params))
       end
 
       def destroy

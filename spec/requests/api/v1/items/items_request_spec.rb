@@ -69,34 +69,47 @@ RSpec.describe 'Item API' do
 
     expect(status).to eq 404
   end
+  describe 'create' do
+    it 'can create an item' do
+      item_params = { name: 'Test Item',
+                      description: 'This is what the item is like',
+                      unit_price: 15.5,
+                      merchant_id: @merchant.id }
 
-  it 'can create an item' do
-    item_params = { name: 'Test Item',
-                    description: 'This is what the item is like',
-                    unit_price: 15.5,
-                    merchant_id: @merchant.id }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
-    headers = { 'CONTENT_TYPE' => 'application/json' }
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
-    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      expect(response).to be_successful
 
-    expect(response).to be_successful
+      item = JSON.parse(response.body, symbolize_names: true)[:data]
 
-    item = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(Item.all.count).to be 6
 
-    expect(Item.all.count).to be 6
+      expect(item).to have_key(:type)
+      expect(item[:type]).to eq 'item'
 
-    expect(item).to have_key(:type)
-    expect(item[:type]).to eq 'item'
+      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes][:name]).to eq 'Test Item'
 
-    expect(item[:attributes]).to have_key(:name)
-    expect(item[:attributes][:name]).to eq 'Test Item'
+      expect(item[:attributes]).to have_key(:description)
+      expect(item[:attributes][:description]).to eq 'This is what the item is like'
 
-    expect(item[:attributes]).to have_key(:description)
-    expect(item[:attributes][:description]).to eq 'This is what the item is like'
+      expect(item[:attributes]).to have_key(:unit_price)
+      expect(item[:attributes][:unit_price]).to eq 15.5
+    end
 
-    expect(item[:attributes]).to have_key(:unit_price)
-    expect(item[:attributes][:unit_price]).to eq 15.5
+    it 'can return an error if an attribute is not provided' do
+      item_params = { name: 'Test Item',
+                      unit_price: 15.5,
+                      merchant_id: @merchant.id }
+
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+
+      expect(status).to eq 422
+    end
   end
 
   describe 'edit item' do

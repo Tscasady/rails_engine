@@ -18,6 +18,10 @@ module Api
         render json: ItemSerializer.new(Item.update(params[:id], item_params))
       end
 
+      def destroy
+        render json: ItemSerializer.new(Item.destroy(params[:id]))
+      end
+
       private
 
       def item_params

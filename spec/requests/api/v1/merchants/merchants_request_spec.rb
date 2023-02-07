@@ -28,24 +28,26 @@ RSpec.describe 'Merchant API' do
   end
 
   it 'can return a single merchant' do
-    merchant = Merchant.first
+    original_merchant = Merchant.first
 
-    get "/api/v1/merchants/#{merchant.id}"
+    get "/api/v1/merchants/#{original_merchant.id}"
 
     expect(response).to be_successful
 
     merchant = JSON.parse(response.body, symbolize_names: true)[:data]
-
     expect(merchant).to have_key(:id)
     expect(merchant[:id]).to be_an String
+    expect(merchant[:id]).to eq original_merchant.id.to_s
 
     expect(merchant).to have_key(:type)
     expect(merchant[:type]).to be_a(String)
+    expect(merchant[:type]).to eq 'merchant'
 
     expect(merchant).to have_key(:attributes)
     expect(merchant[:attributes]).to be_a(Hash)
 
     expect(merchant[:attributes]).to have_key(:name)
     expect(merchant[:attributes][:name]).to be_a(String)
+    expect(merchant[:attributes][:name]).to eq original_merchant.name
   end
 end

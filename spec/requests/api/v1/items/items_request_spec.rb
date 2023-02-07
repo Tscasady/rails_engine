@@ -92,6 +92,7 @@ RSpec.describe 'Item API' do
   end
 
   it 'can edit an item' do
+    # TODO: test multiple fields
     item = Item.first
     previous_name = item.name
     item_params = { name: "A New Item Name" }
@@ -105,9 +106,16 @@ RSpec.describe 'Item API' do
 
     expect(item.name).to_not eq previous_name
   end
-  it 'can delete an item' do
 
+  it 'can delete an item' do
+    item = Item.last
+
+    expect { delete "/api/v1/items/#{item.id}" }.to change(Item, :count).by(-1)
+
+    expect(response).to be_successful
+    expect(Item.find(item.id)).to raise_error(ActiveRecord::RecordNotFound)
   end
+
   it 'get the merchant data associated with a given item' do
 
   end

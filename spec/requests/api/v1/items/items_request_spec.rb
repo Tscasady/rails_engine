@@ -115,6 +115,4 @@ RSpec.describe 'Item API' do
     expect { Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
   end
 
-  xit 'get the merchant data associated with a given item' do
-  end
 end

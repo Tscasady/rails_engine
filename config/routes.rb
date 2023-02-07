@@ -7,7 +7,11 @@ Rails.application.routes.draw do
         resources :items, only: [:index], controller: 'merchants/items'
       end
 
-      resources :items
+      resources :items do
+        member do
+          get 'merchant', to: 'items/merchants#show'
+        end
+      end
     end
   end
 end

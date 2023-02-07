@@ -3,8 +3,7 @@ module Api
     module Merchants
       class SearchController < ApplicationController
         def search
-          require 'pry'; binding.pry
-          render json: Merchant.search(params[:query])
+          render json: MerchantSerializer.new(Merchant.search(params[:name]).first)
         end
         
         def search_all

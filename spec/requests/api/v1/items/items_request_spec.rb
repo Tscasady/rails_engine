@@ -59,4 +59,41 @@ RSpec.describe 'Item API' do
     expect(item[:attributes]).to have_key(:unit_price)
     expect(item[:attributes][:unit_price]).to be_a Float
   end
+
+  it 'can create an item' do
+    item_params = { name: "Test Item",
+                    description: "This is what the item is like",
+                    unit_price: 15.5
+    }
+
+    post "/api/v1/items", params: JSON.generate(item: item_params)
+
+    expect(response).to be_successful
+
+    item = JSON.parse(response.body, symbolize_names: true)[:data]
+
+    expect(Item.all.count).to be 6
+
+    expect(item).to have_key(:type)
+    expect(item[:type]).to be_a String
+
+    expect(item[:attributes]).to have_key(:name)
+    expect(item[:attributes][:name]).to be_a "Test Item"
+
+    expect(item[:attributes]).to have_key(:description)
+    expect(item[:attributes][:description]).to be_a "This is what the item is like."
+
+    expect(item[:attributes]).to have_key(:unit_price)
+    expect(item[:attributes][:unit_price]).to be_a 15.5
+  end
+
+  it 'can edit an item' do
+
+  end
+  it 'can delete an item' do
+
+  end
+  it 'get the merchant data associated with a given item' do
+
+  end
 end

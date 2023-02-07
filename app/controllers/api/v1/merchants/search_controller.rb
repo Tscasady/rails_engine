@@ -7,6 +7,7 @@ module Api
         end
         
         def search_all
+          render json: MerchantSerializer.new(Merchant.search(params[:name]))
         end
       end
     end

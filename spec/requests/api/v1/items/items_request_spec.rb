@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'Item API' do
 
   before :each do
-    create(:merchant)
+    @merchant = create(:merchant)
     create_list(:item, 5)
   end
 
@@ -62,11 +62,10 @@ RSpec.describe 'Item API' do
   end
 
   it 'can create an item' do
-    merchant = Merchant.first
     item_params = { name: "Test Item",
                     description: "This is what the item is like",
                     unit_price: 15.5,
-                    merchant_id: merchant.id
+                    merchant_id: @merchant.id
     }
 
     headers = {"CONTENT_TYPE" => "application/json"}
@@ -80,7 +79,7 @@ RSpec.describe 'Item API' do
     expect(Item.all.count).to be 6
 
     expect(item).to have_key(:type)
-    expect(item[:type]).to be_a String
+    expect(item[:type]).to eq "item"
 
     expect(item[:attributes]).to have_key(:name)
     expect(item[:attributes][:name]).to eq "Test Item"
@@ -93,7 +92,16 @@ RSpec.describe 'Item API' do
   end
 
   it 'can edit an item' do
+    item = Item.first
+    previous_name = item.name
+    item_params = { name: "A New Item Name" }
+    headers = {"CONTENT_TYPE" => "application/json"}
 
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+
+    expect(response).to be_successful
+
+    expect(item.name).to_not eq previous_name
   end
   it 'can delete an item' do
 

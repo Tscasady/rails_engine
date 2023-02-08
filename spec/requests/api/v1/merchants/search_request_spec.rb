@@ -50,6 +50,12 @@ RSpec.describe 'The Merchant Search Api' do
       expect(merchant[:attributes]).to have_key(:name)
       expect(merchant[:attributes][:name]).to eql "Blant"
     end
+
+    it 'returns status 400 if no params are given' do
+      get "/api/v1/merchants/find"
+
+      expect(status).to eq 400
+    end
   end
 
   describe 'search_all' do

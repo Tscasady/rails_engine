@@ -3,7 +3,15 @@ require 'rails_helper'
 RSpec.describe 'Item API' do
   before :each do
     @merchant = create(:merchant)
-    create_list(:item, 5)
+    @item1 = create(:item, merchant: @merchant)
+    @item2 = create(:item, merchant: @merchant)
+    @item3 = create(:item, merchant: @merchant)
+    @invoice1 = create(:invoice, merchant: @merchant) 
+    @invoice2 = create(:invoice, merchant: @merchant) 
+    @invoice_item1 = create(:invoice_item, item: @item1, invoice: @invoice1)
+    @invoice_item2 = create(:invoice_item, item: @item1, invoice: @invoice2)
+    @invoice_item3 = create(:invoice_item, item: @item2, invoice: @invoice2)
+    @invoice_item4 = create(:invoice_item, item: @item3, invoice: @invoice2)
   end
 
   it 'can return all items' do
@@ -13,7 +21,7 @@ RSpec.describe 'Item API' do
 
     items = JSON.parse(response.body, symbolize_names: true)[:data]
 
-    expect(items.count).to eq(5)
+    expect(items.count).to eq(3)
     items.each do |item|
       expect(item).to have_key(:id)
       expect(item[:id]).to be_an String
@@ -69,6 +77,7 @@ RSpec.describe 'Item API' do
 
     expect(status).to eq 404
   end
+
   describe 'create' do
     it 'can create an item' do
       item_params = { name: 'Test Item',
@@ -84,18 +93,15 @@ RSpec.describe 'Item API' do
 
       item = JSON.parse(response.body, symbolize_names: true)[:data]
 
-      expect(Item.all.count).to be 6
+      expect(Item.all.count).to be 4
 
       expect(item).to have_key(:type)
       expect(item[:type]).to eq 'item'
 
-      expect(item[:attributes]).to have_key(:name)
       expect(item[:attributes][:name]).to eq 'Test Item'
 
-      expect(item[:attributes]).to have_key(:description)
       expect(item[:attributes][:description]).to eq 'This is what the item is like'
 
-      expect(item[:attributes]).to have_key(:unit_price)
       expect(item[:attributes][:unit_price]).to eq 15.5
     end
 
@@ -114,7 +120,6 @@ RSpec.describe 'Item API' do
 
   describe 'edit item' do
     it 'can edit an item' do
-      # TODO: test multiple fields
       item = Item.first
       previous_name = item.name
       item_params = { name: 'A New Item Name' }
@@ -131,7 +136,6 @@ RSpec.describe 'Item API' do
     end
 
     it 'can edit a different field' do
-      # TODO: test multiple fields
       item = Item.first
       previous_name = item.name
       item_params = { description: 'A New Item Description' }
@@ -164,12 +168,12 @@ RSpec.describe 'Item API' do
   end
 
   it 'can delete an item' do
-    # TODO: Do I test the destruction of dependents here?
-    item = Item.last
-
-    expect { delete "/api/v1/items/#{item.id}" }.to change(Item, :count).by(-1)
+    id = @item1.id
+    expect { delete "/api/v1/items/#{@item1.id}" }.to change(Item, :count).by(-1)
 
     expect(response).to be_successful
-    expect { Item.find(item.id) }.to raise_error(ActiveRecord::RecordNotFound)
+    expect { Item.find(id) }.to raise_error(ActiveRecord::RecordNotFound)
+    expect { Invoice.find(id) }.to raise_error(ActiveRecord::RecordNotFound)
+    expect(@invoice2.items.count).to eq 2
   end
 end

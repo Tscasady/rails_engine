@@ -10,7 +10,7 @@ RSpec.describe 'The Merchant Search Api' do
 
   describe 'single merchant search' do
     it 'can search for a single merchant by name' do
-      get "/api/v1/merchants/find?name=ant"
+      get '/api/v1/merchants/find?name=ant'
 
       expect(response).to be_successful
 
@@ -31,7 +31,7 @@ RSpec.describe 'The Merchant Search Api' do
     end
 
     it 'returns a merchant by preferencing alphabetical order by name over perfect match' do
-      get "/api/v1/merchants/find?name=lant"
+      get '/api/v1/merchants/find?name=lant'
 
       expect(response).to be_successful
 
@@ -52,7 +52,7 @@ RSpec.describe 'The Merchant Search Api' do
     end
 
     it 'returns status 400 if no params are given' do
-      get "/api/v1/merchants/find"
+      get '/api/v1/merchants/find'
 
       expect(status).to eq 400
     end
@@ -60,7 +60,7 @@ RSpec.describe 'The Merchant Search Api' do
 
   describe 'search_all' do
     it 'returns the names of all merchants that match a given search' do
-      get "/api/v1/merchants/find_all?name=ant"
+      get '/api/v1/merchants/find_all?name=ant'
 
       expect(response).to be_successful
 
@@ -84,7 +84,7 @@ RSpec.describe 'The Merchant Search Api' do
     end
 
     it 'returns status 400 if no params are given' do
-      get "/api/v1/merchants/find_all"
+      get '/api/v1/merchants/find_all'
 
       expect(status).to eq 400
     end

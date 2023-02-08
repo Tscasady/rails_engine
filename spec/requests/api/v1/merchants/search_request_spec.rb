@@ -82,5 +82,11 @@ RSpec.describe 'The Merchant Search Api' do
         expect(merchant[:attributes][:name].downcase).to include 'ant'
       end
     end
+
+    it 'returns status 400 if no params are given' do
+      get "/api/v1/merchants/find_all"
+
+      expect(status).to eq 400
+    end
   end
 end 

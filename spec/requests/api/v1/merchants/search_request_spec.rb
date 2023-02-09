@@ -21,7 +21,7 @@ RSpec.describe 'The Merchant Search Api' do
       expect(merchant[:attributes][:name]).to eq "Ant"
     end
 
-    it 'will return an empty array if no objects match the search' do
+    it 'will return an empty hash if no objects match the search' do
       get '/api/v1/merchants/find?name=NOMATCH'
 
       expect(response).to be_successful

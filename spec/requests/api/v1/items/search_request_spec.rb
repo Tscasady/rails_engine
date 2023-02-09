@@ -6,7 +6,7 @@ RSpec.describe 'The Item Search Api' do
     @item2 = create(:item, name: "Blant", description: 'Bless you ants', unit_price: 5555 )
     @item3 = create(:item, name: "lant", description: 'no one knows what this is', unit_price: 333)
     @item4 = create(:item, name: "Greg", description: 'Loves ants', unit_price: 111)
-    @item4 = create(:item, name: "Bob", description: 'Bob is an item apparently', unit_price: 2)
+    @item4 = create(:item, name: "Bob", description: 'Bob loves this item apparently', unit_price: 2)
   end
 
   describe 'single item search' do
@@ -22,7 +22,19 @@ RSpec.describe 'The Item Search Api' do
       expect(item[:attributes][:name]).to eql "Ant"
     end
 
-    it 'returns a item by preferencing alphabetical order by name over perfect match' do
+    it 'returns matches on description' do
+      get '/api/v1/items/find?name=item'
+
+      expect(response).to be_successful
+
+      item = JSON.parse(response.body, symbolize_names: true)[:data]
+
+      expect(item[:id]).to eq "#{@item4.id}"
+      expect(item[:type]).to eq 'item'
+      expect(item[:attributes][:name]).to eql "Bob"
+    end
+
+    it 'returns an item by preferencing alphabetical order by name over perfect match' do
       get '/api/v1/items/find?name=lant'
 
       expect(response).to be_successful
@@ -118,21 +130,27 @@ RSpec.describe 'The Item Search Api' do
       expect(response).to be_successful
 
       items = JSON.parse(response.body, symbolize_names: true)[:data]
+      expect(items.length).to eq 4
 
       items.each do |item|
-        expect(item.length).to eq 3
-        expect(item).to have_key(:id)
         expect(item[:id]).to be_an String
-
-        expect(item).to have_key(:type)
-        expect(item[:type]).to be_a(String)
         expect(item[:type]).to eq 'item'
-
-        expect(item).to have_key(:attributes)
-        expect(item[:attributes]).to be_a Hash
-
         expect(item[:attributes]).to have_key(:name)
-        expect(item[:attributes][:name].downcase).to include 'ant'
+      end
+    end
+
+    it 'returns matches on description' do
+      get '/api/v1/items/find_all?name=loves'
+
+      expect(response).to be_successful
+
+      items = JSON.parse(response.body, symbolize_names: true)[:data]
+
+      expect(items.length).to eq 2
+      items.each do |item|
+        expect(item[:id]).to be_an String
+        expect(item[:type]).to eq 'item'
+        expect(item[:attributes]).to have_key(:name)
       end
     end
 

@@ -15,4 +15,12 @@ class Item < ApplicationRecord
       invoice.destroy if invoice.items.count == 1
     end
   end
+
+  def self.name_search(search_params)
+    where("name ILIKE ?", "%#{search_params[:name]}%").or(where("description ILIKE ?", "%{search_params[:name]}"))
+  end
+
+  def self.price_search(search_params)
+    where('unit_price >= ?', "#{search_params[:min_price]}").where('unit_price <= ?', "#{search_params[:max_price]}").order(:name)
+  end
 end

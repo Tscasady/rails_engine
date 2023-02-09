@@ -2,15 +2,15 @@ require 'rails_helper'
 
 RSpec.describe Item, type: :model do
   describe 'relations' do
-    it { should belong_to :merchant} 
-    it { should have_many :invoice_items } 
-    it { should have_many(:invoices).through(:invoice_items) } 
+    it { should belong_to :merchant }
+    it { should have_many :invoice_items }
+    it { should have_many(:invoices).through(:invoice_items) }
   end
 
   describe 'validations' do
-    it { should validate_presence_of :name}
-    it { should validate_presence_of :description}
-    it { should validate_presence_of :unit_price}
+    it { should validate_presence_of :name }
+    it { should validate_presence_of :description }
+    it { should validate_presence_of :unit_price }
   end
 
   describe 'clean_invoices' do
@@ -20,18 +20,18 @@ RSpec.describe Item, type: :model do
     let!(:item3) { create(:item, merchant: merchant) }
     let!(:invoice1) { create(:invoice, merchant: merchant) }
     let!(:invoice2) { create(:invoice, merchant: merchant) }
-    let!(:invoice_item1) {create(:invoice_item, item: item1, invoice: invoice1)}
-    let!(:invoice_item2) {create(:invoice_item, item: item1, invoice: invoice2)}
-    let!(:invoice_item3) {create(:invoice_item, item: item2, invoice: invoice2)}
-    let!(:invoice_item4) {create(:invoice_item, item: item3, invoice: invoice2)}
+    let!(:invoice_item1) { create(:invoice_item, item: item1, invoice: invoice1) }
+    let!(:invoice_item2) { create(:invoice_item, item: item1, invoice: invoice2) }
+    let!(:invoice_item3) { create(:invoice_item, item: item2, invoice: invoice2) }
+    let!(:invoice_item4) { create(:invoice_item, item: item3, invoice: invoice2) }
 
-    it 'after destroy, it can remove an invoice when it no longer has any items' do
+    it 'before destroy, it can remove an invoice when it no longer has any items' do
       item1.destroy
 
-      expect{ Invoice.find(invoice1.id) }.to raise_error(ActiveRecord::RecordNotFound)
+      expect { Invoice.find(invoice1.id) }.to raise_error(ActiveRecord::RecordNotFound)
     end
 
-    it 'after destroy, it will not remove an invoice that still has other items' do
+    it 'before destroy, it will not remove an invoice that still has other items' do
       item1.destroy
 
       expect(Invoice.find(invoice2.id)).to eq invoice2

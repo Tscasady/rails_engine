@@ -3,7 +3,12 @@ module Api
     module Merchants
       class SearchController < ApplicationController
         def search
-          render json: MerchantSerializer.new(Merchant.search(search_params).first)
+          merchant = Merchant.search(search_params).first
+          if merchant
+            render json: MerchantSerializer.new(merchant)
+          else
+            render json: { data: {} }
+          end
         end
         
         def search_all

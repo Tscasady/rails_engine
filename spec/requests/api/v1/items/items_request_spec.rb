@@ -6,8 +6,8 @@ RSpec.describe 'Item API' do
     @item1 = create(:item, merchant: @merchant)
     @item2 = create(:item, merchant: @merchant)
     @item3 = create(:item, merchant: @merchant)
-    @invoice1 = create(:invoice, merchant: @merchant) 
-    @invoice2 = create(:invoice, merchant: @merchant) 
+    @invoice1 = create(:invoice, merchant: @merchant)
+    @invoice2 = create(:invoice, merchant: @merchant)
     @invoice_item1 = create(:invoice_item, item: @item1, invoice: @invoice1)
     @invoice_item2 = create(:invoice_item, item: @item1, invoice: @invoice2)
     @invoice_item3 = create(:invoice_item, item: @item2, invoice: @invoice2)
@@ -69,11 +69,11 @@ RSpec.describe 'Item API' do
   end
 
   it 'returns status 404 if item is not found' do
-    get "/api/v1/items/999999999"
+    get '/api/v1/items/999999999'
 
     expect(status).to eq 404
 
-    get "/api/v1/items/bad_query"
+    get '/api/v1/items/bad_query'
 
     expect(status).to eq 404
   end
@@ -94,14 +94,9 @@ RSpec.describe 'Item API' do
       item = JSON.parse(response.body, symbolize_names: true)[:data]
 
       expect(Item.all.count).to be 4
-
-      expect(item).to have_key(:type)
       expect(item[:type]).to eq 'item'
-
       expect(item[:attributes][:name]).to eq 'Test Item'
-
       expect(item[:attributes][:description]).to eq 'This is what the item is like'
-
       expect(item[:attributes][:unit_price]).to eq 15.5
     end
 
@@ -132,7 +127,7 @@ RSpec.describe 'Item API' do
       expect(response).to be_successful
 
       expect(item.name).to_not eq previous_name
-      expect(item.name).to eq "A New Item Name"
+      expect(item.name).to eq 'A New Item Name'
     end
 
     it 'can edit a different field' do
@@ -148,13 +143,13 @@ RSpec.describe 'Item API' do
       expect(response).to be_successful
 
       expect(item.description).to_not eq previous_name
-      expect(item.description).to eq "A New Item Description"
+      expect(item.description).to eq 'A New Item Description'
     end
 
     it 'will raise a 404 if item is not found' do
       item_params = { name: 'A New Item Name' }
       headers = { 'CONTENT_TYPE' => 'application/json' }
-      patch "/api/v1/items/999999", headers: headers, params: JSON.generate(item: item_params)
+      patch '/api/v1/items/999999', headers: headers, params: JSON.generate(item: item_params)
       expect(status).to be 404
     end
 

@@ -50,4 +50,10 @@ RSpec.describe 'Merchant API' do
     expect(merchant[:attributes][:name]).to be_a(String)
     expect(merchant[:attributes][:name]).to eq original_merchant.name
   end
+
+  it 'returns 404 if merchant id does not exist' do
+    get '/api/v1/merchants/123123123/items'
+
+    expect(status).to eq 404
+  end
 end

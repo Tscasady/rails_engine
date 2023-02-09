@@ -17,7 +17,7 @@ class Item < ApplicationRecord
   end
 
   def self.name_search(search_params)
-    where("name ILIKE ?", "%#{search_params[:name]}%").or(where("description ILIKE ?", "%{search_params[:name]}"))
+    where("name ILIKE ?", "%#{search_params[:name]}%").or(where('description ILIKE ?', "%#{search_params[:name]}%"))
   end
 
   def self.price_search(search_params)

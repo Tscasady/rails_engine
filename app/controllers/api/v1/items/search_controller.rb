@@ -19,14 +19,6 @@ module Api
             end
           end
         end
-        #   
-        #   item = Item.search(search_params).first
-        #   if item
-        #     render json: ItemSerializer.new(Item.search(search_params).first)
-        #   else
-        #     render json: { data: {} }
-        #   end
-        # end
         
         def search_all
           if params[:name]

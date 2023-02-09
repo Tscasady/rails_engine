@@ -32,7 +32,7 @@ RSpec.describe 'Merchant Items API' do
 
         expect(item[:attributes]).to have_key(:unit_price)
         expect(item[:attributes][:unit_price]).to be_a Float
-  #TODO merchant_id can be removied?
+
         expect(item[:attributes]).to have_key(:merchant_id)
         expect(item[:attributes][:merchant_id]).to eq @merchant.id
       end
@@ -47,5 +47,3 @@ RSpec.describe 'Merchant Items API' do
     end
   end
 end
-
-    

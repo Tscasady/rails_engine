@@ -99,6 +99,14 @@ RSpec.describe 'The Item Search Api' do
         get '/api/v1/items/find?name=test&min_price=333'
 
         expect(status).to eq 400
+
+        get '/api/v1/items/find?name=test&max_price=333'
+
+        expect(status).to eq 400
+
+        get '/api/v1/items/find?name=test&min_price=2&max_price=333'
+
+        expect(status).to eq 400
       end
     end
   end

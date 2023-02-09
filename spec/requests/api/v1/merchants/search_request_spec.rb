@@ -16,18 +16,20 @@ RSpec.describe 'The Merchant Search Api' do
 
       merchant = JSON.parse(response.body, symbolize_names: true)[:data]
 
-      expect(merchant).to have_key(:id)
-      expect(merchant[:id]).to be_an String
-
-      expect(merchant).to have_key(:type)
-      expect(merchant[:type]).to be_a(String)
+      expect(merchant[:id]).to eq "#{@merchant1.id}"
       expect(merchant[:type]).to eq 'merchant'
+      expect(merchant[:attributes][:name]).to eq "Ant"
+    end
 
-      expect(merchant).to have_key(:attributes)
-      expect(merchant[:attributes]).to be_a Hash
+    it 'will return an empty array if no objects match the search' do
+      get '/api/v1/merchants/find?name=NOMATCH'
 
-      expect(merchant[:attributes]).to have_key(:name)
-      expect(merchant[:attributes][:name]).to eql "Ant"
+      expect(response).to be_successful
+
+      empty = JSON.parse(response.body, symbolize_names: true)
+
+      expect(empty).to have_key(:data)
+      expect(empty[:data]).to eq({})
     end
 
     it 'returns a merchant by preferencing alphabetical order by name over perfect match' do

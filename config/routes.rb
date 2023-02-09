@@ -18,6 +18,13 @@ Rails.application.routes.draw do
         member do
           get 'merchant', to: 'items/merchants#show'
         end
+
+        scope module: 'items' do
+          collection do
+            get 'find', to: 'search#search'
+            get 'find_all', to: 'search#search_all'
+          end
+        end
       end
 
     end

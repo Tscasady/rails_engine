@@ -1,4 +1,6 @@
 class ParamsFilter
+
+  VALID_SEARCH_FIELDS = [:name, :min_price, :max_price]
   
   def initialize(params)
     @params = params
@@ -16,7 +18,7 @@ class ParamsFilter
   end
 
   def valid_fields
-    query = params.slice(:name, :min_price, :max_price)
+    query = params.slice(*VALID_SEARCH_FIELDS)
     raise ActionController::ParameterMissing.new('empty') if query.empty?
     raise ActionController::ParameterMissing.new("Can't search for both name and price.") if query.keys.length > 1 && query.include?(:name)
     query
@@ -27,7 +29,7 @@ class ParamsFilter
   attr_accessor :params, :query
 
   def empty_check(query)
-    query.each do |key, value|
+    query.each do |_, value|
       raise ActionController::ParameterMissing.new('negative') if value == '' || value.to_i < 0 
     end
   end

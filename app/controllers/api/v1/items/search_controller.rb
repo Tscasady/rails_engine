@@ -4,19 +4,11 @@ module Api
       class SearchController < ApplicationController
         def search
           if params[:name]
-            item = Item.name_search(search_params).first
-            if item
-              render json: ItemSerializer.new(item)
-            else
-              render json: { data: {} }
-            end
+            render json: ItemSerializer.new(Item.name_search(search_params).first)
+              .hash_for_one_record
           else
-            item = Item.price_search(search_params).first
-            if item
-              render json: ItemSerializer.new(item)
-            else
-              render json: { data: {} }
-            end
+            render json: ItemSerializer.new(Item.price_search(search_params).first)
+              .hash_for_one_record
           end
         end
         
